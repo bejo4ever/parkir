@@ -67,6 +67,7 @@ namespace Nv.Parkir
             this.toolStripStatusLabel2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 489);
             this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.statusStrip1.Size = new System.Drawing.Size(845, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
@@ -115,14 +116,14 @@ namespace Nv.Parkir
             // mnItemLogin
             // 
             this.mnItemLogin.Name = "mnItemLogin";
-            this.mnItemLogin.Size = new System.Drawing.Size(152, 22);
+            this.mnItemLogin.Size = new System.Drawing.Size(110, 22);
             this.mnItemLogin.Text = "&Login";
             this.mnItemLogin.Click += new System.EventHandler(this.mnItemLogin_Click);
             // 
             // mnItemExit
             // 
             this.mnItemExit.Name = "mnItemExit";
-            this.mnItemExit.Size = new System.Drawing.Size(152, 22);
+            this.mnItemExit.Size = new System.Drawing.Size(110, 22);
             this.mnItemExit.Text = "&Exit";
             this.mnItemExit.Click += new System.EventHandler(this.mnItemExit_Click);
             // 
@@ -186,7 +187,7 @@ namespace Nv.Parkir
             // mnItemLaporan
             // 
             this.mnItemLaporan.Name = "mnItemLaporan";
-            this.mnItemLaporan.Size = new System.Drawing.Size(152, 22);
+            this.mnItemLaporan.Size = new System.Drawing.Size(124, 22);
             this.mnItemLaporan.Text = "Laporan";
             this.mnItemLaporan.Click += new System.EventHandler(this.mnItemLaporan_Click);
             // 
@@ -207,7 +208,7 @@ namespace Nv.Parkir
             // mnItemAbout
             // 
             this.mnItemAbout.Name = "mnItemAbout";
-            this.mnItemAbout.Size = new System.Drawing.Size(152, 22);
+            this.mnItemAbout.Size = new System.Drawing.Size(114, 22);
             this.mnItemAbout.Text = "About";
             this.mnItemAbout.Click += new System.EventHandler(this.mnItemAbout_Click);
             // 

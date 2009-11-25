@@ -29,8 +29,11 @@ namespace gateout
 
         private long currentTiketID;
         private long currentMemberID;
+        private long currentDeposit;
         private long currentInitialTarif;
         private TimeSpan currentDuration;
+
+        private bool alreadyConfirmed = false;
 
         public FormMain()
         {
@@ -104,6 +107,7 @@ namespace gateout
                     statusLabelStartLogin.Text = "Mulai Login:" +
                         dateStr;
                     ClearForm();
+                    Commons.FullScreen.SetWinFullScreen(this.Handle);
                 }
             }
             else
@@ -111,7 +115,7 @@ namespace gateout
                 Application.Exit();
             }
 
-            Commons.FullScreen.SetWinFullScreen(this.Handle);
+            
         }
 
              
@@ -150,17 +154,7 @@ namespace gateout
                     " " + now.Hour+":"+now.Minute+":"+now.Second;
                 
                 long extendedTarifInt = 0;
-                if (txtExtendedTarif.Text.Trim().Length > 0)
-                {                    
-                    try
-                    {
-                        long.TryParse(txtExtendedTarif.Text.Trim(),out extendedTarifInt);
-                    }
-                    catch (Exception)
-                    {
-                        extendedTarifInt = 0;
-                    }
-                }
+                extendedTarifInt = GetExtendedTarif();
                 long totalTarif = currentInitialTarif + extendedTarifInt;
                 string sql = "update tickets set date_out = '" + nowString + "', " +
                     " extended_price = " + extendedTarifInt.ToString() + ", gate_out_id = " + AppConfig.Instance.GateId +
@@ -174,13 +168,46 @@ namespace gateout
             }
         }
 
+        private long GetExtendedTarif()
+        {
+            long extendedTarifInt = 0;
+            if (txtExtendedTarif.Text.Trim().Length > 0)
+            {
+                try
+                {
+                    long.TryParse(txtExtendedTarif.Text.Trim(), out extendedTarifInt);
+                }
+                catch (Exception)
+                {
+                    extendedTarifInt = 0;
+                }
+            }
+            return extendedTarifInt;
+        }
+
+        /// <summary>
+        /// update deposit after substracted with total payment
+        /// </summary>
+        /// <param name="deposit"></param>
+        private void UpdateDeposit(long deposit)
+        {
+            using (MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString))
+            {
+                string sql = "update members set current_deposit = " + deposit.ToString() +
+                    " where id = " + currentMemberID;
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         private void SearchTicket(string p)
         {           
             using (MySqlConnection conn = new MySqlConnection(
                 Commons.AppConfig.Instance.ConnectionString))
             {
                 //check if this ticket is already out from 
-                string sql = "select gate_out_id, gate_out_operator_id from tickets " +
+                string sql = "select gate_out_id from tickets " +
                     "  where ticket_number= '" + p + "'";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 conn.Open();
@@ -188,8 +215,13 @@ namespace gateout
                 bool ticketInvalid = false;
                 while (reader.Read())
                 {
-                    long gateId = reader.GetInt64("gate_out_id");
-                    long operatorId = reader.GetInt64("gate_out_operator_id");
+                    long gateId = AppConfig.NOT_DEFINED_ID;
+                    int ordinal = reader.GetOrdinal("gate_out_id");
+                    if(!reader.IsDBNull(ordinal))
+                    {
+                        gateId = reader.GetInt64("gate_out_id");
+                    }                     
+                    
                     if (gateId != AppConfig.NOT_DEFINED_ID)
                     {
                         ticketInvalid = true;
@@ -205,12 +237,14 @@ namespace gateout
                     return;
                 }
 
-
                 reader.Close();
                 sql = "select id, date_in, initial_price, image_path, member_id from tickets " +
                         " where ticket_number = '" + p + "'";
                 if (conn.State != ConnectionState.Open)
                     conn.Open();
+
+                cmd.CommandText = sql;
+                cmd.CommandType =CommandType.Text;
                 reader = cmd.ExecuteReader();
                 bool found = false;
                 while (reader.Read())
@@ -222,9 +256,8 @@ namespace gateout
                     lblJamKeluar.Text = now.Hour + ":" + now.Minute + ":" + now.Second;
                     
                     currentDuration = now.Subtract(dateIn);
-                    string message = "Hari :" + currentDuration.Days + " Jam :" + currentDuration.Hours + " Menit :" + currentDuration.Minutes;
-                    lblDuration.Text = message;
-                    
+                    string message = currentDuration.Days + " Hari, " + currentDuration.Hours + " Jam, " + currentDuration.Minutes + " Menit"; 
+                    lblDuration.Text = message;                  
 
                     
                     currentTiketID = reader.GetInt64("id");
@@ -270,41 +303,79 @@ namespace gateout
                     ClearForm();
                     MessageBox.Show(this, "Data Tidak Ditemukan, check kembali nomor tiket", "Data Tidak Ditemukan",
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+
+                if (currentMemberID != AppConfig.NOT_DEFINED_ID)
+                {
+                    SearchMember();
                 }
             }
             // TODO Process ...
         }
 
+        private void SearchMember()
+        {
+            using (MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString))
+            {
+                string sql = "SELECT mg.name AS group_name, m.name as name, m.current_deposit as current_deposit, m.address " +
+                       " as address FROM member_groups mg, members m " +
+                       " WHERE m.id = " + currentMemberID + " AND mg.id = m.member_group_id" ;
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                conn.Open();
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    lblJenisMember.Text = reader.GetString("group_name");
+                    lblName.Text = reader.GetString("name");
+                    currentDeposit = reader.GetInt64("current_deposit");
+                    lblDeposit.Text = "Rp. " + currentDeposit.ToString();
+                    lblAlamat.Text = reader.GetString("address");
+                }
+                reader.Close(); 
+            }
+        }
+
         private void btnAddDeposit_Click(object sender, EventArgs e)
         {
-            FormAddDeposit addDeposit = new FormAddDeposit();
+            TambahDeposit();
+        }
+
+        private void TambahDeposit()
+        {
+            FormAddDeposit addDeposit = new FormAddDeposit(currentMemberID);
             if (addDeposit.ShowDialog(this) == DialogResult.OK)
             {
-                int addedDeposit = addDeposit.Deposit;               
+                long addedDeposit = addDeposit.Deposit;
                 using (MySqlConnection cnn = new MySqlConnection(AppConfig.Instance.ConnectionString))
                 {
                     try
                     {
-
                         string sql = "select current_deposit from members where id = " +
                             currentMemberID;
                         MySqlCommand cmd = new MySqlCommand(sql, cnn);
                         cnn.Open();
-                        long currentDeposit = (long)cmd.ExecuteScalar();
-                        currentDeposit += addedDeposit;
+                        long deposit = (long)cmd.ExecuteScalar();
+                        deposit += addedDeposit;
                         DateTime now = DateTime.Now;
                         string nowStr =
                             now.Year + "-" + now.Month + "-" + now.Day + " " +
                             now.Hour + ":" + now.Minute + ":" + now.Second;
 
-                        sql = "update members set current_deposit = " + currentDeposit +
+                        sql = "update members set current_deposit = " + deposit +
                             ", last_deposit_at = '" + nowStr + "' " +
                             " where id = " + currentMemberID;
                         cmd.CommandText = sql;
                         cmd.CommandType = CommandType.Text;
+                        if (cnn.State != ConnectionState.Open)
+                            cnn.Open();
+
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show(this, "Sukses melakukan update deposit", "Transaksi Berhasil",
+                        MessageBox.Show(this, "Sukses melakukan update deposit sebesar Rp. " + addDeposit +
+                            " Saldo deposit anda menjadi Rp. " + deposit, "Transaksi Berhasil",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        currentDeposit = deposit;
+                        lblDeposit.Text = "Rp. " + currentDeposit.ToString();
                     }
                     catch (Exception)
                     {
@@ -312,7 +383,7 @@ namespace gateout
                             MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     }
                 }
-                
+
             }
         }
 
@@ -339,7 +410,39 @@ namespace gateout
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            UpdateTicket();
+            if (currentMemberID != AppConfig.NOT_DEFINED_ID)
+            {
+                long extendedTarif = GetExtendedTarif();
+                long total = currentInitialTarif + extendedTarif;
+                if (currentDeposit >= total)
+                {
+                    UpdateTicket();
+                    UpdateDeposit(currentDeposit - total);
+                    MessageBox.Show(this, "Sisa Deposit Anda Adalah Rp. " + (currentDeposit - total),
+                        "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(this,
+                        "Sisa deposit anda Rp. " + currentDeposit + " tidak mencukupi untuk membayar biaya parkir " +
+                        " sebesar Rp. " + total + ". Anda Harus membayar tunai atau menambah deposit terlebih dulu","Informasi",MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (!alreadyConfirmed)
+                    {
+                        alreadyConfirmed = true;
+                        txtPay.Focus();
+                        return;
+                    }
+                    else // bayar tunai 
+                    {
+                        UpdateTicket();
+                    }
+                }
+            }
+            else
+            {
+                UpdateTicket();
+            }
+            
             ClearForm();
         }
 
@@ -353,6 +456,8 @@ namespace gateout
             currentInitialTarif = 0;
             currentTiketID = AppConfig.NOT_DEFINED_ID;
             currentMemberID = AppConfig.NOT_DEFINED_ID;
+            currentDeposit = 0;
+            alreadyConfirmed = false;
             pictureBox1.Image = null;
             gbMember.Visible = false;
 
@@ -448,9 +553,5 @@ namespace gateout
                 txtPay.Clear();
             }
         }
-
-        
-
-        
     }
 }

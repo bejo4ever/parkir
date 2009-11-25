@@ -43,8 +43,8 @@ namespace Nv.Parkir
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnReport = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.cmbReportType = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -56,9 +56,9 @@ namespace Nv.Parkir
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Location = new System.Drawing.Point(0, 201);
+            this.dataGrid.Location = new System.Drawing.Point(0, 180);
             this.dataGrid.Name = "dataGrid";
-            this.dataGrid.Size = new System.Drawing.Size(615, 228);
+            this.dataGrid.Size = new System.Drawing.Size(615, 280);
             this.dataGrid.TabIndex = 0;
             this.dataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGrid_CellClick);
             // 
@@ -75,14 +75,14 @@ namespace Nv.Parkir
             this.groupBox1.Enabled = false;
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(306, 137);
+            this.groupBox1.Size = new System.Drawing.Size(306, 133);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Manage User";
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(90, 108);
+            this.btnCancel.Location = new System.Drawing.Point(90, 100);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 7;
@@ -92,7 +92,7 @@ namespace Nv.Parkir
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(9, 108);
+            this.btnSave.Location = new System.Drawing.Point(9, 100);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 6;
@@ -152,7 +152,7 @@ namespace Nv.Parkir
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(12, 172);
+            this.btnAdd.Location = new System.Drawing.Point(12, 151);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 2;
@@ -162,7 +162,7 @@ namespace Nv.Parkir
             // 
             // btnEdit
             // 
-            this.btnEdit.Location = new System.Drawing.Point(93, 172);
+            this.btnEdit.Location = new System.Drawing.Point(93, 151);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(75, 23);
             this.btnEdit.TabIndex = 3;
@@ -173,7 +173,7 @@ namespace Nv.Parkir
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(174, 172);
+            this.btnDelete.Location = new System.Drawing.Point(174, 151);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 23);
             this.btnDelete.TabIndex = 4;
@@ -207,15 +207,6 @@ namespace Nv.Parkir
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Laporan";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 18);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Pilih Laporan";
-            // 
             // cmbReportType
             // 
             this.cmbReportType.FormattingEnabled = true;
@@ -228,11 +219,20 @@ namespace Nv.Parkir
             this.cmbReportType.Size = new System.Drawing.Size(185, 21);
             this.cmbReportType.TabIndex = 7;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 18);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(68, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Pilih Laporan";
+            // 
             // FormUser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(619, 431);
+            this.ClientSize = new System.Drawing.Size(619, 462);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnEdit);
@@ -240,7 +240,7 @@ namespace Nv.Parkir
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataGrid);
             this.Name = "FormUser";
-            this.Text = "FormUser";
+            this.Text = "Kelola User";
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

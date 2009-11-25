@@ -33,6 +33,7 @@ namespace Nv.Parkir
             this.btnDelete = new System.Windows.Forms.Button();
             this.dataGrid = new System.Windows.Forms.DataGridView();
             this.groupBoxEdit = new System.Windows.Forms.GroupBox();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.txtExtendedPrice = new System.Windows.Forms.TextBox();
             this.txtInitialPrice = new System.Windows.Forms.TextBox();
@@ -42,14 +43,15 @@ namespace Nv.Parkir
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnCancel = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtExtendedAfter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.groupBoxEdit.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(9, 167);
+            this.btnAdd.Location = new System.Drawing.Point(6, 200);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 2;
@@ -59,7 +61,7 @@ namespace Nv.Parkir
             // 
             // btnEdit
             // 
-            this.btnEdit.Location = new System.Drawing.Point(90, 167);
+            this.btnEdit.Location = new System.Drawing.Point(87, 200);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(75, 23);
             this.btnEdit.TabIndex = 3;
@@ -70,7 +72,7 @@ namespace Nv.Parkir
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(171, 167);
+            this.btnDelete.Location = new System.Drawing.Point(168, 200);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 23);
             this.btnDelete.TabIndex = 4;
@@ -81,16 +83,21 @@ namespace Nv.Parkir
             // 
             // dataGrid
             // 
+            this.dataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Location = new System.Drawing.Point(1, 196);
+            this.dataGrid.Location = new System.Drawing.Point(1, 229);
             this.dataGrid.MultiSelect = false;
             this.dataGrid.Name = "dataGrid";
-            this.dataGrid.Size = new System.Drawing.Size(652, 188);
+            this.dataGrid.Size = new System.Drawing.Size(652, 220);
             this.dataGrid.TabIndex = 5;
             this.dataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGrid_CellClick);
             // 
             // groupBoxEdit
             // 
+            this.groupBoxEdit.Controls.Add(this.txtExtendedAfter);
+            this.groupBoxEdit.Controls.Add(this.label5);
             this.groupBoxEdit.Controls.Add(this.btnCancel);
             this.groupBoxEdit.Controls.Add(this.btnSave);
             this.groupBoxEdit.Controls.Add(this.txtExtendedPrice);
@@ -104,15 +111,25 @@ namespace Nv.Parkir
             this.groupBoxEdit.Enabled = false;
             this.groupBoxEdit.Location = new System.Drawing.Point(7, 12);
             this.groupBoxEdit.Name = "groupBoxEdit";
-            this.groupBoxEdit.Size = new System.Drawing.Size(370, 149);
+            this.groupBoxEdit.Size = new System.Drawing.Size(370, 182);
             this.groupBoxEdit.TabIndex = 6;
             this.groupBoxEdit.TabStop = false;
             this.groupBoxEdit.Text = "Manage Tarif";
             // 
+            // btnCancel
+            // 
+            this.btnCancel.Location = new System.Drawing.Point(92, 153);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 9;
+            this.btnCancel.Text = "&Batal";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
             // btnSave
             // 
             this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(9, 120);
+            this.btnSave.Location = new System.Drawing.Point(11, 153);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 8;
@@ -185,28 +202,34 @@ namespace Nv.Parkir
             this.label1.TabIndex = 0;
             this.label1.Text = "Nama";
             // 
-            // btnCancel
+            // label5
             // 
-            this.btnCancel.Location = new System.Drawing.Point(90, 120);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 9;
-            this.btnCancel.Text = "&Batal";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 122);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(87, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Setelah Jam Ke :";
+            // 
+            // txtExtendedAfter
+            // 
+            this.txtExtendedAfter.Location = new System.Drawing.Point(123, 119);
+            this.txtExtendedAfter.Name = "txtExtendedAfter";
+            this.txtExtendedAfter.Size = new System.Drawing.Size(100, 20);
+            this.txtExtendedAfter.TabIndex = 11;
             // 
             // FormPrice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(652, 386);
+            this.ClientSize = new System.Drawing.Size(652, 449);
             this.Controls.Add(this.groupBoxEdit);
             this.Controls.Add(this.dataGrid);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnEdit);
             this.Controls.Add(this.btnAdd);
             this.Name = "FormPrice";
-            this.Text = "Form Tarif";
+            this.Text = "Kelola Tarif";
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).EndInit();
             this.groupBoxEdit.ResumeLayout(false);
             this.groupBoxEdit.PerformLayout();
@@ -231,5 +254,7 @@ namespace Nv.Parkir
         private System.Windows.Forms.ComboBox cbPriceGroups;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox txtExtendedAfter;
+        private System.Windows.Forms.Label label5;
     }
 }

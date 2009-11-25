@@ -31,7 +31,7 @@ namespace Nv.Parkir
         private void GetPriceGroups()
         {
             MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString);
-            MySqlCommand cmd = new MySqlCommand("select group_name from price_groups", conn);
+            MySqlCommand cmd = new MySqlCommand("select group_name from tarifs_groups", conn);
             conn.Open();
             MySqlDataReader reader = cmd.ExecuteReader();
             cbPriceGroups.BeginUpdate();
@@ -48,7 +48,7 @@ namespace Nv.Parkir
         private long PriceGroupId(string name)
         {
             MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString);
-            MySqlCommand cmd = new MySqlCommand("select id from price_groups where group_name ='"
+            MySqlCommand cmd = new MySqlCommand("select id from tarifs_groups where group_name ='"
                 + name + "' limit 1", conn);
             conn.Open();
             object obj = cmd.ExecuteScalar();
@@ -87,11 +87,11 @@ namespace Nv.Parkir
                AppConfig.Instance.ConnectionString);
             MySql.Data.MySqlClient.MySqlDataAdapter adp = new MySql.Data.MySqlClient.MySqlDataAdapter(
                 "select p.id as id, p.name as name, p.initial_price as initial_tarif, p.extended_price as " +
-                " extended_tarif, g.group_name from price p, price_groups g where " + 
+                " extended_tarif, p.extended_after as extended_after, g.group_name from tarifs p, tarifs_groups g where " + 
                 " p.group_id = g.id", conn);
             conn.Open();
-            adp.Fill(dataset, "price");
-            dataGrid.DataSource = dataset.Tables["price"].DefaultView;
+            adp.Fill(dataset, "tarifs");
+            dataGrid.DataSource = dataset.Tables["tarifs"].DefaultView;
         }
 
         private void clear_data_detail()
@@ -109,7 +109,7 @@ namespace Nv.Parkir
         private void show_data_detail()
         {
             string sql = "select p.name as name, pg.id as group_id , pg.group_name as group_name, " +
-                " p.initial_price as initial_price , p.extended_price as extended_price from price p, price_groups pg where p.id = "
+                " p.initial_price as initial_price , p.extended_price as extended_price, p.extended_after as extended_after from tarifs p, tarifs_groups pg where p.id = "
                 + selected_id.ToString() + " and p.group_id = pg.id";
             MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
@@ -124,6 +124,7 @@ namespace Nv.Parkir
                 cbPriceGroups.SelectedItem = selected_group_name;
                 txtInitialPrice.Text = reader.GetString("initial_price");
                 txtExtendedPrice.Text = reader.GetString("extended_price");
+                txtExtendedAfter.Text = reader.GetString("extended_after");
             }
 
             reader.Close();
@@ -151,7 +152,7 @@ namespace Nv.Parkir
             //TODO add confirm dialog
             if (MessageBox.Show(this, "Yakin untuk menghapus data ini ?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
-                sql = "delete from price where id = " + selected_id;
+                sql = "delete from tarifs where id = " + selected_id;
                 conn = new MySqlConnection(AppConfig.Instance.ConnectionString);
                 cmn = new MySqlCommand(sql, conn);
                 conn.Open();
@@ -178,8 +179,9 @@ namespace Nv.Parkir
                     DateTime now = DateTime.Now;
                     string strNow = now.Year + "-" + now.Month + "-" + now.Day + " " + now.Hour + ":" + now.Minute + ":" + now.Hour;
                     long price_groups_id = PriceGroupId(cbPriceGroups.SelectedItem.ToString());
-                    string sql = "insert into price set name = '" + txtName.Text + "', group_id = " + price_groups_id +
+                    string sql = "insert into tarifs set name = '" + txtName.Text + "', group_id = " + price_groups_id +
                         ", initial_price = " + txtInitialPrice.Text + ", extended_price = " + txtExtendedPrice.Text +
+                        ", extended_after = " + txtExtendedAfter.Text + 
                         ", created_at = '" + strNow + "'";
                     MySqlConnection conn = new MySqlConnection(AppConfig.Instance.ConnectionString);
                     MySqlCommand cmn = new MySqlCommand(sql, conn);
@@ -191,8 +193,9 @@ namespace Nv.Parkir
                     now = DateTime.Now;
                     strNow = now.Year + "-" + now.Month + "-" + now.Day + " " + now.Hour + ":" + now.Minute + ":" + now.Hour;
                     price_groups_id = PriceGroupId(cbPriceGroups.SelectedItem.ToString());
-                    sql = "update price set name = '" + txtName.Text + "', group_id = " + price_groups_id +
+                    sql = "update tarifs set name = '" + txtName.Text + "', group_id = " + price_groups_id +
                         ", initial_price = " + txtInitialPrice.Text + ", extended_price = " + txtExtendedPrice.Text +
+                        ", extended_after = " + txtExtendedAfter.Text + 
                         ", modified_at = '" + strNow + "' where id = " + selected_id;
 
                     conn = new MySqlConnection(AppConfig.Instance.ConnectionString);

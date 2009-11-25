@@ -14,18 +14,16 @@ using MySql.Data.MySqlClient;
 using AForge.Video;
 using Commons;
 namespace gatein
-{    
+{
     internal delegate Boolean WriteToComPortDelegate(string textToWrite);
     internal delegate void ProcessSerialDataMarshalDelegate(string inputToDisplay);
     internal delegate void ProcessSerialErrorMarshalDelegate(string message);
 
     public partial class FormMain : Form
     {
-        private static string OpenButtonText = "Buka Koneksi Serial";
-        private static string CloseButtonText = "Putus Koneksi Serial";
-
         private Image currentImage = null;
         private string imagePath;
+        private bool takeImage = false;
 
         private bool useNetworkShare = false;
 
@@ -36,14 +34,16 @@ namespace gatein
         private string rfid_start = "";
         private string currentRFIDProcessed = "";
 
-        private SerialDataReceivedEventHandler inputSerialDataReceivedEventHandler;
-        private SerialErrorReceivedEventHandler inputSerialErrorReceivedEventHandler;
+        private SerialDataReceivedEventHandler inputDataReceivedEventHandler;
+        private SerialErrorReceivedEventHandler inputErrorReceivedEventHandler;
 
-        private SerialDataReceivedEventHandler gateSerialDataReceivedEventHandler;
-        private WriteToComPortDelegate writeToInputSerialDelegate;
-        
+        private SerialDataReceivedEventHandler gateDataReceivedEventHandler;
+        private SerialErrorReceivedEventHandler gateErrorReceivedEventHandler;
 
-        private string currentTicketNumber = "";
+        private WriteToComPortDelegate writeToInputDelegate;
+        private WriteToComPortDelegate writeToGateDelegate;
+
+        private string currentRFIDTicketNumber = "";
 
 
         string share_server;
@@ -54,6 +54,7 @@ namespace gatein
 
         private string RFID_START_DELIM = "";
         private string RFID_END_DELIM = "";
+
         public FormMain()
         {
             InitializeComponent();
@@ -100,18 +101,40 @@ namespace gatein
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            FullScreen.SetWinFullScreen(this.Handle);
-            
-            lblCompanyName.Text = AppConfig.Instance.CompanyName;
-            lblCompanyAddress.Text = AppConfig.Instance.CompanyAddress + " (" +
-                AppConfig.Instance.CompanyPhoneNumber + ")";
-            lblGateName.Text = AppConfig.Instance.GateName;
-            
-            OpenVideoPlayer();
-            OpenSerialPort();
+            using (FormLogin login = new FormLogin())
+            {
+                login.StartPosition = FormStartPosition.CenterScreen;
+                if (login.ShowDialog() == DialogResult.OK)
+                {
+                    string username = login.Username;
+                    string password = login.Password;
+                    if (AppConfig.Instance.ValidateLogin(username, password))
+                    {
+                        FullScreen.SetWinFullScreen(this.Handle);
+
+                        lblCompanyName.Text = AppConfig.Instance.CompanyName;
+                        lblCompanyAddress.Text = AppConfig.Instance.CompanyAddress + " (" +
+                            AppConfig.Instance.CompanyPhoneNumber + ")";
+                        lblGateName.Text = AppConfig.Instance.GateName;
+
+                        OpenVideoPlayer();
+                        OpenSerialPort();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Username atau password salah", "Gagal Login",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Close();
+                    }
+                }
+                else
+                {
+                    Close();
+                }
+            }
 
         }
-        
+
         private void InputSerialDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             if (Properties.Settings.Default.InputDataMode == DataMode.Text)
@@ -153,37 +176,65 @@ namespace gatein
             ProcessInputSerialErrorMarshal(message);
         }
 
-        private void ProcessInputSerialErrorMarshal(string message)
+        private void GateErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
-            if (InvokeRequired)
+            string message = "";
+            switch (e.EventType)
             {
-                object[] args = new object[] { message };
-                ProcessSerialErrorMarshalDelegate del = new ProcessSerialErrorMarshalDelegate(ProcessSerialError);
-                this.Invoke(del, args);
+                case SerialError.Frame:
+                    message = "Framing error ";
+                    break;
+                case SerialError.Overrun:
+                    message = "character-buffer overrun ";
+                    break;
+                case SerialError.RXOver:
+                    message = "Input buffer overflow";
+                    break;
+                case SerialError.RXParity:
+                    message = "parity error pada hardware";
+                    break;
+                case SerialError.TXFull:
+                    message = "transmit data, namun output buffer sedang penuh";
+                    break;
             }
-            else
-            {
-                ProcessSerialError(message);
-            }
+            ProcessGateSerialErrorMarshal(message);
         }
+        private void ProcessInputSerialErrorMarshal(string message)
+        {           
+            object[] args = new object[] { message };
+            ProcessSerialErrorMarshalDelegate del = new ProcessSerialErrorMarshalDelegate(ProcessSerialError);
+            base.Invoke(del, args);
+         }
 
         private void ProcessSerialError(string message)
         {
             statusTransfer.Text = message;
         }
 
+        private void ProcessGateSerialErrorMarshal(string message)
+        {
+            object[] args = { message };
+            ProcessSerialDataMarshalDelegate del = new ProcessSerialDataMarshalDelegate(ProcessGateError);
+            base.Invoke(del, args);
+        }
+
+        private void ProcessGateError(string errorMessage)
+        {
+            statusKoneksiPortal.Text = errorMessage;
+        }
+
         internal void ProcessInputSerialDataMarshal(string textToDisplay)
         {
-            if (InvokeRequired)
-            {
-                object[] args = new object[] { textToDisplay };
-                ProcessSerialDataMarshalDelegate del = new ProcessSerialDataMarshalDelegate(ProcessInputSerialData);
-                this.Invoke(del, args);
-            }
-            else
-            {
-                ProcessInputSerialData(textToDisplay);
-            }
+            //if (InvokeRequired)
+            //{
+            object[] args = new object[1] { textToDisplay };
+            ProcessSerialDataMarshalDelegate del = new ProcessSerialDataMarshalDelegate(ProcessInputSerialData);
+            this.Invoke(del, args);
+            //}
+            //else
+            //{
+            //    ProcessInputSerialData(textToDisplay);
+            //}
         }
 
         internal void ProcessInputSerialData(string toDisplay)
@@ -195,14 +246,14 @@ namespace gatein
                 if (toDisplay != currentRFIDProcessed)
                 {
                     statusTiket.Text = "Generating ticket for .." + toDisplay;
-                    GenerateTicket(toDisplay);
+                    GenerateMemberTicket(toDisplay);
                 }
                 else
                 {
                     rfid += " not processed";
 
                 }
-                rtbCurrentStatus.AppendText(rfid);
+
             }
             else if (toDisplay.StartsWith(RFID_START_DELIM) && !toDisplay.EndsWith(RFID_END_DELIM))
             {
@@ -215,14 +266,14 @@ namespace gatein
                 if (rfid != currentRFIDProcessed)
                 {
                     statusTiket.Text = "Generating ticket for .." + toDisplay;
-                    GenerateTicket(rfid);
+                    GenerateMemberTicket(rfid);
                 }
                 else
                 {
                     rfid += " not processed";
                 }
                 rfid_start = "";
-                rtbCurrentStatus.AppendText(rfid);
+
             }
 
         }
@@ -246,12 +297,12 @@ namespace gatein
                 inputSerial.PortName = Properties.Settings.Default.InputPortName;
 
                 inputSerial.Open();
-                statusKoneksi.Text = "Input connected to Port : " + inputSerial.PortName;
-                inputSerialDataReceivedEventHandler = new SerialDataReceivedEventHandler(InputSerialDataReceived);
-                inputSerial.DataReceived += inputSerialDataReceivedEventHandler;
-                
-                inputSerialErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(InputSerialErrorReceived);
-                inputSerial.ErrorReceived += inputSerialErrorReceivedEventHandler;
+                statusKoneksiInput.Text = "Input connected to Port : " + inputSerial.PortName;
+                inputDataReceivedEventHandler = new SerialDataReceivedEventHandler(InputSerialDataReceived);
+                inputSerial.DataReceived += inputDataReceivedEventHandler;
+
+                inputErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(InputSerialErrorReceived);
+                inputSerial.ErrorReceived += inputErrorReceivedEventHandler;
 
                 gateSerial = new SerialPort();
                 gateSerial.BaudRate = Properties.Settings.Default.GateBaudRate;
@@ -261,13 +312,12 @@ namespace gatein
                 gateSerial.PortName = Properties.Settings.Default.GatePortName;
 
                 gateSerial.Open();
-                statusKoneksi.Text +=
-                    ", Gate connected to Port :" + gateSerial.PortName;
-                gateSerialDataReceivedEventHandler = new SerialDataReceivedEventHandler(GateSerialDataReceived);
-                gateSerial.DataReceived += gateSerialDataReceivedEventHandler;
-
-                btnSerialConnection.Text = FormMain.CloseButtonText;
-                btnSerialConnection.Tag = true;
+                statusKoneksiPortal.Text =
+                    "Gate connected to Port :" + gateSerial.PortName;
+                gateDataReceivedEventHandler = new SerialDataReceivedEventHandler(GateSerialDataReceived);
+                gateSerial.DataReceived += gateDataReceivedEventHandler;
+                gateErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(GateErrorReceived);
+                gateSerial.ErrorReceived += gateErrorReceivedEventHandler;
             }
             catch (Exception ex)
             {
@@ -281,8 +331,8 @@ namespace gatein
         /// <param name="textToWrite"></param>
         public void WriteDataToInputSerial(string textToWrite)
         {
-            writeToInputSerialDelegate = new WriteToComPortDelegate(_WriteToInputSerial);
-            IAsyncResult iar = writeToInputSerialDelegate.BeginInvoke(textToWrite, new AsyncCallback(_WriteToInputSerialCompleted), DateTime.Now.ToString());
+            writeToInputDelegate = new WriteToComPortDelegate(_WriteToInputSerial);
+            IAsyncResult iar = writeToInputDelegate.BeginInvoke(textToWrite, new AsyncCallback(_WriteToInputSerialCompleted), DateTime.Now.ToString());
         }
 
         private Boolean _WriteToInputSerial(string textToWrite)
@@ -308,13 +358,47 @@ namespace gatein
         private void _WriteToInputSerialCompleted(IAsyncResult iar)
         {
             string message;
-            
+
             Boolean success;
             message = iar.AsyncState as string;
-            success = writeToInputSerialDelegate.EndInvoke(iar);
+            success = writeToInputDelegate.EndInvoke(iar);
             statusTransfer.Text = "Pengiriman pesan [ " + message + " ] sukses.";
         }
 
+        public void WriteDataToGate(string textToWrite)
+        {
+            writeToGateDelegate = new WriteToComPortDelegate(_WriteToGate);
+            IAsyncResult iar = writeToGateDelegate.BeginInvoke(textToWrite, new AsyncCallback(_WriteToGateCompleted), DateTime.Now.ToString());
+        }
+
+        private Boolean _WriteToGate(string textToWrite)
+        {
+            bool result = false;
+            if (gateSerial.IsOpen)
+            {
+                if((gateSerial.WriteBufferSize - gateSerial.BytesToWrite) > textToWrite.Length)
+                {
+                    gateSerial.Write(textToWrite);
+                    result = true;
+                } 
+                else 
+                {
+                    statusTransfer.Text = "Tidak cukup buffer untuk mengirim pesan :" +
+                        textToWrite + " Ke Portal";
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        private void _WriteToGateCompleted(IAsyncResult iar)
+        {
+            string message;
+            bool success;
+            message = iar.AsyncState as string;
+            success = writeToGateDelegate.EndInvoke(iar);
+            statusTransfer.Text = "Pengiriman Pesan [" + message + "] sukses.";
+        }
         private void OpenVideoPlayer()
         {
             StopVideoPlayer();
@@ -346,17 +430,27 @@ namespace gatein
 
         private void StopSerialPorts()
         {
+            CloseInput();
+            CloseGate();
+        }
+
+        private void CloseInput()
+        {
             if (!(null == inputSerial))
             {
                 if (inputSerial.IsOpen)
                 {
                     while (inputSerial.BytesToWrite > 0)
                     { }
-                    inputSerial.DataReceived -= inputSerialDataReceivedEventHandler;
+                    inputSerial.DataReceived -= inputDataReceivedEventHandler;
                     inputSerial.Dispose();
+                    statusKoneksiInput.Text = "Tidak Terhubung Ke Input";
                 }
             }
+        }
 
+        private void CloseGate()
+        {
             if (!(null == gateSerial))
             {
                 if (gateSerial.IsOpen)
@@ -364,12 +458,12 @@ namespace gatein
                     while (gateSerial.BytesToWrite > 0)
                     {
                     }
+                    gateSerial.DataReceived -= gateDataReceivedEventHandler;
+                    gateSerial.ErrorReceived -= gateErrorReceivedEventHandler;
                     gateSerial.Dispose();
+                    statusKoneksiPortal.Text = "Tidak Terhubung Ke Portal";
                 }
             }
-            btnSerialConnection.Text = FormMain.OpenButtonText;
-            btnSerialConnection.Tag = false;
-            statusKoneksi.Text = "Tidak Terhubung ke Input dan Palang Pintu";
         }
 
         public void StartIO()
@@ -403,48 +497,18 @@ namespace gatein
 
         private void openSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (FormLogin login = new FormLogin())
-            {
-                if (login.ShowDialog() == DialogResult.OK)
-                {
-                    string username = login.Username;
-                    string password = login.Password;
-                    if (AppConfig.Instance.ValidateLogin(username, password))
-                    {
-                        StopIO();
-                        FormGateInSetting setting = new FormGateInSetting();
-                        setting.ShowDialog(this);
-                        StartIO();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Username atau password salah", "Gagal Login",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-            }
+
+            StopIO();
+            FormGateInSetting setting = new FormGateInSetting();
+            setting.ShowDialog(this);
+            StartIO();
+
 
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (FormLogin login = new FormLogin())
-            {
-                if (login.ShowDialog() == DialogResult.OK)
-                {
-                    string username = login.Username;
-                    string password = login.Password;
-                    if (AppConfig.Instance.ValidateLogin(username, password))
-                    {
-                        Application.Exit();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Username atau password salah", "Gagal Login",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-            }
+            Application.Exit();
         }
 
         private void videoSourcePlayer1_NewFrame(object sender, ref Bitmap image)
@@ -455,7 +519,18 @@ namespace gatein
             g.DrawString(now.ToString(), this.Font, sb, new PointF(5, 20));
             sb.Dispose();
             g.Dispose();
-            currentImage = image;
+            if (this.takeImage)
+            {
+                currentImage = image;
+                this.takeImage = false;
+                statusAmbilGambar.Text = "Ambil Gambar Selesai";
+            }
+            else
+            {
+                currentImage = null;
+                this.takeImage = false;
+                statusAmbilGambar.Text = "Ambil Gambar";
+            }
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -470,19 +545,63 @@ namespace gatein
             //process start from incoming signal from inputSerial
             //the generate ticket.
             string signal = "";
-            GenerateTicket(signal);
+            //GenerateTicket(signal);
+
         }
 
+        private void GenerateNopolTicket(string nopol, string tarif)
+        {
+            string ticketNumber = Commons.AppConfig.Instance.GenerateTicketID();
+            
+            DateTime now = DateTime.Now;
+            string date_in = now.Year + "-" + now.Month + "-" + now.Day + " " + now.Hour + ":" +
+                now.Minute + ":" + now.Second;
+            string sql = "";
+            if (null != currentImage)
+            {
+                string path = System.IO.Path.Combine(imagePath, ticketNumber + ".jpg");
+                currentImage.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
+                
+                sql = "insert into tickets set gate_in_id =" + Commons.AppConfig.Instance.GateId +
+                    ", ticket_number = '" + ticketNumber + "', " +
+                    " date_in = '" + date_in + "', " +
+                    " image_path = '" + ticketNumber + ".jpg', " +
+                    " initial_price = " + tarif;
+            }
+            else
+            {
+                sql = "insert into tickets set gate_in_id = " + Commons.AppConfig.Instance.GateId +
+                    ", ticket_number = '" + ticketNumber + "', " +
+                    " date_in = '" + date_in + "', " +
+                    " initial_price = " + tarif;
+            }
 
+            MySqlConnection conn = new MySqlConnection(
+                    Commons.AppConfig.Instance.ConnectionString);
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            statusTiket.Text = "Data Berhasil Disimpan";
+            if (MessageBox.Show("Cetak Tiket ?", "Konfirmasi", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                PrintTicket();
+                statusTiket.Text = "generate tiket selesai ..";
+            }
+            else
+            {
+                statusTiket.Text = "Tiket tidak dicetak";
+            }
+        }
 
-        private void GenerateTicket(string rfid)
+        private void GenerateMemberTicket(string rfid)
         {
             currentRFIDProcessed = rfid;
-            currentTicketNumber =
+            currentRFIDTicketNumber =
                 Commons.AppConfig.Instance.GenerateTicketID();
             //take picture
             Image img = (Image)currentImage.Clone();
-            string path = System.IO.Path.Combine(imagePath, currentTicketNumber + ".jpg");
+            string path = System.IO.Path.Combine(imagePath, currentRFIDTicketNumber + ".jpg");
             img.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
             //save new ticket
             DateTime now = DateTime.Now;
@@ -490,25 +609,34 @@ namespace gatein
                 now.Minute + ":" + now.Second;
             // TODO check signal to determine members or not
             string sql = "insert into tickets set gate_in_id =" + Commons.AppConfig.Instance.GateId +
-                ", ticket_number = '" + currentTicketNumber + "', " +
+                ", ticket_number = '" + currentRFIDTicketNumber + "', " +
                 " date_in = '" + date_in + "', " +
-                " image_path = '" + currentTicketNumber + ".jpg', " +
-                " initial_price = " + Commons.AppConfig.Instance.TarifInitial;
+                " image_path = '" + currentRFIDTicketNumber + ".jpg', " +
+                " initial_price = 0";
             MySqlConnection conn = new MySqlConnection(
                 Commons.AppConfig.Instance.ConnectionString);
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             conn.Open();
             cmd.ExecuteNonQuery();
             conn.Close();
-
+            statusTiket.Text = "Data Berhasil Disimpan";
             //printing ticket
-            //PrintTicket();
-            statusTiket.Text = "generate tiket selesai ..";
+            if (MessageBox.Show("Cetak Tiket ?", "Konfirmasi", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                PrintTicket();
+                statusTiket.Text = "generate tiket selesai ..";
+            }
+            else
+            {
+                statusTiket.Text = "Tiket tidak dicetak";
+            }
         }
 
         private void PrintTicket()
         {
             System.Drawing.Printing.PrintDocument doc = new System.Drawing.Printing.PrintDocument();
+            System.Drawing.Printing.PageSettings ps = new System.Drawing.Printing.PageSettings();
+
             doc.DocumentName = "tiket.pdf";
 
             doc.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(doc_PrintPage);
@@ -530,13 +658,13 @@ namespace gatein
             yPos += this.Font.GetHeight(e.Graphics);
             e.Graphics.DrawString("Ticket Number ", this.Font, Brushes.Black, leftMargin, yPos);
             yPos += this.Font.GetHeight(e.Graphics);
-            e.Graphics.DrawString(currentTicketNumber, this.Font, Brushes.Black, leftMargin, yPos);
+            e.Graphics.DrawString(currentRFIDTicketNumber, this.Font, Brushes.Black, leftMargin, yPos);
 
         }
 
         private void btnSerialConnection_Click(object sender, EventArgs e)
         {
-            bool connected = (bool)btnSerialConnection.Tag;
+            bool connected = (bool)btnOpenPortal.Tag;
             if (connected == true)
             {
                 StopSerialPorts();
@@ -552,6 +680,39 @@ namespace gatein
             Commons.FormChangePassword changePassword = new FormChangePassword(
                 AppConfig.Instance.UserID);
             changePassword.ShowDialog(this);
+        }
+
+        private void btnTakeImage_Click(object sender, EventArgs e)
+        {
+            this.takeImage = true;
+            statusAmbilGambar.Text = "Ambil Gambar Selesai";
+        }
+
+        private void btnOpenPortal_Click(object sender, EventArgs e)
+        {
+            string command = Properties.Settings.Default.OpenPortalCommand;
+            WriteDataToGate(command);
+        }
+
+        private void btnCloseGate_Click(object sender, EventArgs e)
+        {
+            string command = Properties.Settings.Default.ClosePortalCommand;
+            WriteDataToGate(command);
+        }
+
+        private void txtCashPay_TextChanged(object sender, EventArgs e)
+        {
+            long tarif;
+            long cashPay;
+            long.TryParse(txtTarif.Text, out tarif);
+            long.TryParse(txtCashPay.Text, out cashPay);
+            long cashBack = cashPay - tarif;
+            txtCashBack.Text = "Rp. " + cashBack.ToString();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            GenerateNopolTicket(txtNopol.Text, txtTarif.Text);
         }
 
     }
