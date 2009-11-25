@@ -76,6 +76,7 @@ namespace Nv.Parkir
             groupBox1.Enabled = true;
             groupBox1.Text = "Manage User [Add]";
             operationMode = DataOperationMode.add;
+            txtUsername.Enabled = true;
         }
 
         private void GetRoleNames()
@@ -133,6 +134,7 @@ namespace Nv.Parkir
             reader.Close();
             conn.Close();
             operationMode = DataOperationMode.edit;
+            txtUsername.Enabled = false;
         }
 
         private void btnSave_Click(object sender, EventArgs e)

@@ -50,5 +50,29 @@
     <Setting Name="GateDataMode" Type="Commons.DataMode" Scope="User">
       <Value Profile="(Default)">Text</Value>
     </Setting>
+    <Setting Name="OpenPortalCommand" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:OPEN1;</Value>
+    </Setting>
+    <Setting Name="ClosePortalCommand" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:CLOSE1;</Value>
+    </Setting>
+    <Setting Name="StopPortalCommand" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:STOP1;</Value>
+    </Setting>
+    <Setting Name="TestCommand" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:TEST;</Value>
+    </Setting>
+    <Setting Name="CMDOKResponse" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:OK;</Value>
+    </Setting>
+    <Setting Name="CMDErrorResponse" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:CMD ERR;</Value>
+    </Setting>
+    <Setting Name="ClosePortalResponse" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:IN1ON;</Value>
+    </Setting>
+    <Setting Name="OpenPortalResponse" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">:IN1OFF</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

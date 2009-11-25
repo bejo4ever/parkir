@@ -29,9 +29,11 @@ namespace gateout
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabelUser = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabelStartLogin = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusLabelError = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblCompanyAddress = new System.Windows.Forms.Label();
             this.lblGateName = new System.Windows.Forms.Label();
@@ -52,12 +54,12 @@ namespace gateout
             this.lblJamMasuk = new System.Windows.Forms.Label();
             this.txtReturnMoney = new System.Windows.Forms.Label();
             this.gbMember = new System.Windows.Forms.GroupBox();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.btnAddDeposit = new System.Windows.Forms.Button();
+            this.lblDeposit = new System.Windows.Forms.Label();
+            this.lblAlamat = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
+            this.lblJenisMember = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
+            this.btnAddDeposit = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -77,7 +79,6 @@ namespace gateout
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.statusLabelError = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblReturnMoney = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -109,6 +110,12 @@ namespace gateout
             // 
             this.statusLabelStartLogin.Name = "statusLabelStartLogin";
             this.statusLabelStartLogin.Size = new System.Drawing.Size(0, 17);
+            // 
+            // statusLabelError
+            // 
+            this.statusLabelError.ForeColor = System.Drawing.Color.Red;
+            this.statusLabelError.Name = "statusLabelError";
+            this.statusLabelError.Size = new System.Drawing.Size(0, 17);
             // 
             // panel1
             // 
@@ -281,12 +288,12 @@ namespace gateout
             // 
             this.gbMember.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbMember.Controls.Add(this.label34);
-            this.gbMember.Controls.Add(this.label33);
-            this.gbMember.Controls.Add(this.label32);
-            this.gbMember.Controls.Add(this.label31);
-            this.gbMember.Controls.Add(this.btnAddDeposit);
+            this.gbMember.Controls.Add(this.lblDeposit);
+            this.gbMember.Controls.Add(this.lblAlamat);
+            this.gbMember.Controls.Add(this.lblName);
+            this.gbMember.Controls.Add(this.lblJenisMember);
             this.gbMember.Controls.Add(this.label20);
+            this.gbMember.Controls.Add(this.btnAddDeposit);
             this.gbMember.Controls.Add(this.label19);
             this.gbMember.Controls.Add(this.label18);
             this.gbMember.Controls.Add(this.label17);
@@ -298,41 +305,53 @@ namespace gateout
             this.gbMember.Text = "Member";
             this.gbMember.Visible = false;
             // 
-            // label34
+            // lblDeposit
             // 
-            this.label34.Location = new System.Drawing.Point(321, 59);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(130, 20);
-            this.label34.TabIndex = 12;
-            this.label34.Text = "label34";
+            this.lblDeposit.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDeposit.Location = new System.Drawing.Point(315, 24);
+            this.lblDeposit.Name = "lblDeposit";
+            this.lblDeposit.Size = new System.Drawing.Size(186, 43);
+            this.lblDeposit.TabIndex = 12;
+            this.lblDeposit.Text = "deposit";
             // 
-            // label33
+            // lblAlamat
             // 
-            this.label33.Location = new System.Drawing.Point(84, 59);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(155, 61);
-            this.label33.TabIndex = 11;
-            this.label33.Text = "label33";
+            this.lblAlamat.Location = new System.Drawing.Point(315, 72);
+            this.lblAlamat.Name = "lblAlamat";
+            this.lblAlamat.Size = new System.Drawing.Size(214, 51);
+            this.lblAlamat.TabIndex = 11;
+            this.lblAlamat.Text = "alamt";
             // 
-            // label32
+            // lblName
             // 
-            this.label32.Location = new System.Drawing.Point(321, 28);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(130, 20);
-            this.label32.TabIndex = 10;
-            this.label32.Text = "label32";
+            this.lblName.Location = new System.Drawing.Point(84, 53);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(130, 20);
+            this.lblName.TabIndex = 10;
+            this.lblName.Text = "nama";
             // 
-            // label31
+            // lblJenisMember
             // 
-            this.label31.Location = new System.Drawing.Point(84, 26);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(155, 20);
-            this.label31.TabIndex = 9;
-            this.label31.Text = "label31";
+            this.lblJenisMember.Location = new System.Drawing.Point(84, 26);
+            this.lblJenisMember.Name = "lblJenisMember";
+            this.lblJenisMember.Size = new System.Drawing.Size(155, 20);
+            this.lblJenisMember.TabIndex = 9;
+            this.lblJenisMember.Text = "asa";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(240, 24);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(43, 13);
+            this.label20.TabIndex = 3;
+            this.label20.Text = "Deposit";
             // 
             // btnAddDeposit
             // 
-            this.btnAddDeposit.Location = new System.Drawing.Point(250, 94);
+            this.btnAddDeposit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnAddDeposit.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddDeposit.Location = new System.Drawing.Point(12, 97);
             this.btnAddDeposit.Name = "btnAddDeposit";
             this.btnAddDeposit.Size = new System.Drawing.Size(157, 36);
             this.btnAddDeposit.TabIndex = 8;
@@ -340,19 +359,10 @@ namespace gateout
             this.btnAddDeposit.UseVisualStyleBackColor = true;
             this.btnAddDeposit.Click += new System.EventHandler(this.btnAddDeposit_Click);
             // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(246, 59);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(43, 13);
-            this.label20.TabIndex = 3;
-            this.label20.Text = "Deposit";
-            // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(9, 57);
+            this.label19.Location = new System.Drawing.Point(240, 76);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(39, 13);
             this.label19.TabIndex = 2;
@@ -361,7 +371,7 @@ namespace gateout
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(246, 25);
+            this.label18.Location = new System.Drawing.Point(9, 57);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(35, 13);
             this.label18.TabIndex = 1;
@@ -372,9 +382,9 @@ namespace gateout
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(9, 24);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(38, 13);
+            this.label17.Size = new System.Drawing.Size(72, 13);
             this.label17.TabIndex = 0;
-            this.label17.Text = "No. ID";
+            this.label17.Text = "Jenis Member";
             // 
             // label15
             // 
@@ -420,8 +430,9 @@ namespace gateout
             this.lblTotalTarif.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalTarif.Location = new System.Drawing.Point(99, 191);
             this.lblTotalTarif.Name = "lblTotalTarif";
-            this.lblTotalTarif.Size = new System.Drawing.Size(0, 29);
+            this.lblTotalTarif.Size = new System.Drawing.Size(69, 29);
             this.lblTotalTarif.TabIndex = 10;
+            this.lblTotalTarif.Text = "Rp. 0";
             // 
             // label11
             // 
@@ -548,12 +559,6 @@ namespace gateout
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             // 
-            // statusLabelError
-            // 
-            this.statusLabelError.ForeColor = System.Drawing.Color.Red;
-            this.statusLabelError.Name = "statusLabelError";
-            this.statusLabelError.Size = new System.Drawing.Size(0, 17);
-            // 
             // lblReturnMoney
             // 
             this.lblReturnMoney.AutoSize = true;
@@ -571,10 +576,10 @@ namespace gateout
             this.ClientSize = new System.Drawing.Size(953, 676);
             this.ContextMenuStrip = this.ctxMenu;
             this.Controls.Add(this.gbMember);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnOpenGate);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnNext);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.txtSearchTicket);
@@ -584,6 +589,7 @@ namespace gateout
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "Pintu Keluar";
             this.Load += new System.EventHandler(this.FormMain_Load);
@@ -644,10 +650,10 @@ namespace gateout
         private System.Windows.Forms.Label lblJamKeluar;
         private System.Windows.Forms.Label lblJamMasuk;
         private System.Windows.Forms.Label lblInitialTarif;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label lblDeposit;
+        private System.Windows.Forms.Label lblAlamat;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.Label lblJenisMember;
         private System.Windows.Forms.ToolStripMenuItem mnItemGantiPassword;
         private System.Windows.Forms.Button btnOpenGate;
         private System.Windows.Forms.Button btnCancel;

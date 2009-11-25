@@ -149,7 +149,8 @@ namespace Nv.Parkir
         private void mnItemSetting_Click(object sender, EventArgs e)
         {
             FormAppSetting setting = new FormAppSetting();
-            setting.ShowDialog(this); ;
+            setting.MdiParent = this;
+            setting.Show() ;
         }
 
         private void mnItemLaporan_Click(object sender, EventArgs e)

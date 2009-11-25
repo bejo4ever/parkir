@@ -50,7 +50,7 @@ namespace gatein
         {
             // Build the form
             InitializeComponent();
-
+            
             // Restore the users settings
             InitializeControlValues();
             InitializeCamera();
@@ -385,7 +385,7 @@ namespace gatein
                 // Set the port's settings
                 inputPort.BaudRate = int.Parse(cmbInputBaudRate.Text);
                 inputPort.DataBits = int.Parse(cmbInputDataBits.Text);
-                inputPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cmbInputStopBits.Text);
+                inputPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cmbInputStopBits.Text,true);
                 inputPort.Parity = (Parity)Enum.Parse(typeof(Parity), cmbInputParity.Text);
                 inputPort.PortName = cmbInputPortName.Text;
 
