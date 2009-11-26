@@ -156,6 +156,13 @@ namespace Nv.Parkir
         private void mnItemLaporan_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void mnItemGate_Click(object sender, EventArgs e)
+        {
+            FormGate gate = new FormGate();
+            gate.MdiParent = this;
+            gate.Show();
         }        
     }
 }

@@ -65,7 +65,8 @@ namespace gatein
 
         void gatePort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            throw new Exception("The method or operation is not implemented.");
+            string message = gatePort.ReadExisting();
+            Log(LogMsgType.Normal, message);
         }
 
         private void InitializeCamera()
@@ -140,14 +141,20 @@ namespace gatein
             foreach (string s in SerialPort.GetPortNames())
                 cmbInputPortName.Items.Add(s);
 
-            if (cmbInputPortName.Items.Contains(Settings.Default.InputPortName)) 
+            if (cmbInputPortName.Items.Contains(Settings.Default.InputPortName))
+            {
                 cmbInputPortName.SelectedItem = Settings.Default.InputPortName;
-            else if (cmbInputPortName.Items.Count > 0) 
+                statusKoneksiInput.Text = "RFID Reader belum terkoneksi";
+            }
+            else if (cmbInputPortName.Items.Count > 0)
+            {
                 cmbInputPortName.SelectedIndex = 0;
+                statusKoneksiInput.Text = "RFID Reader belum terkoneksi";
+            }
             else
             {
-                MessageBox.Show(this, "There are no COM Ports detected on this computer.\nPlease install a COM Port and restart this app.", "No COM Ports Installed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //this.Close();
+                statusKoneksiInput.Text =
+                    "Tidak ada COM Ports terdeteksi di komputer ini";
             }
 
             /// -- gate
@@ -169,13 +176,18 @@ namespace gatein
                 cmbGatePortName.Items.Add(s);
 
             if (cmbGatePortName.Items.Contains(Settings.Default.GatePortName))
+            {
                 cmbGatePortName.SelectedItem = Settings.Default.GatePortName;
+                statusKoneksiPortal.Text = "Portal belum terkoneksi";
+            }
             else if (cmbGatePortName.Items.Count > 0)
+            {
                 cmbGatePortName.SelectedIndex = 0;
+                statusKoneksiPortal.Text = "Portal belum terkoneksi";
+            }
             else
             {
-                MessageBox.Show(this, "There are no COM Ports detected on this computer.\nPlease install a COM Port and restart this app.", "No COM Ports Installed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //this.Close();
+                statusKoneksiPortal.Text = "Tidak ada COM Ports terdeteksi di komputer ini";
             }
         }
 

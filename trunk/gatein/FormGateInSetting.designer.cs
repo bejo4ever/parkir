@@ -50,13 +50,14 @@ namespace gatein
         this.gbPortSettings = new System.Windows.Forms.GroupBox();
         this.groupBox1 = new System.Windows.Forms.GroupBox();
         this.groupBox2 = new System.Windows.Forms.GroupBox();
+        this.groupBox4 = new System.Windows.Forms.GroupBox();
+        this.txtCameraUrl = new System.Windows.Forms.TextBox();
         this.btnOpenCamera = new System.Windows.Forms.Button();
+        this.label2 = new System.Windows.Forms.Label();
         this.txtCameraPassword = new System.Windows.Forms.TextBox();
         this.label4 = new System.Windows.Forms.Label();
         this.txtCameraUsername = new System.Windows.Forms.TextBox();
         this.label3 = new System.Windows.Forms.Label();
-        this.txtCameraUrl = new System.Windows.Forms.TextBox();
-        this.label2 = new System.Windows.Forms.Label();
         this.videoSource = new AForge.Controls.VideoSourcePlayer();
         this.groupBox3 = new System.Windows.Forms.GroupBox();
         this.button1 = new System.Windows.Forms.Button();
@@ -77,18 +78,20 @@ namespace gatein
         this.txtGateSendData = new System.Windows.Forms.TextBox();
         this.label10 = new System.Windows.Forms.Label();
         this.btnGateSend = new System.Windows.Forms.Button();
-        this.groupBox4 = new System.Windows.Forms.GroupBox();
         this.btnApply = new System.Windows.Forms.Button();
         this.statusStrip1 = new System.Windows.Forms.StatusStrip();
         this.btnClose = new System.Windows.Forms.Button();
+        this.statusKoneksiPortal = new System.Windows.Forms.ToolStripStatusLabel();
+        this.statusKoneksiInput = new System.Windows.Forms.ToolStripStatusLabel();
         this.gbMode.SuspendLayout();
         this.gbPortSettings.SuspendLayout();
         this.groupBox1.SuspendLayout();
         this.groupBox2.SuspendLayout();
+        this.groupBox4.SuspendLayout();
         this.groupBox3.SuspendLayout();
         this.gbGateSetting.SuspendLayout();
         this.gbGateDataMode.SuspendLayout();
-        this.groupBox4.SuspendLayout();
+        this.statusStrip1.SuspendLayout();
         this.SuspendLayout();
         // 
         // rtfTerminal
@@ -342,6 +345,31 @@ namespace gatein
         this.groupBox2.TabStop = false;
         this.groupBox2.Text = "IP Camera Setting";
         // 
+        // groupBox4
+        // 
+        this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                    | System.Windows.Forms.AnchorStyles.Right)));
+        this.groupBox4.Controls.Add(this.txtCameraUrl);
+        this.groupBox4.Controls.Add(this.btnOpenCamera);
+        this.groupBox4.Controls.Add(this.label2);
+        this.groupBox4.Controls.Add(this.txtCameraPassword);
+        this.groupBox4.Controls.Add(this.label4);
+        this.groupBox4.Controls.Add(this.txtCameraUsername);
+        this.groupBox4.Controls.Add(this.label3);
+        this.groupBox4.Location = new System.Drawing.Point(6, 348);
+        this.groupBox4.Name = "groupBox4";
+        this.groupBox4.Size = new System.Drawing.Size(369, 100);
+        this.groupBox4.TabIndex = 8;
+        this.groupBox4.TabStop = false;
+        // 
+        // txtCameraUrl
+        // 
+        this.txtCameraUrl.Location = new System.Drawing.Point(64, 10);
+        this.txtCameraUrl.Multiline = true;
+        this.txtCameraUrl.Name = "txtCameraUrl";
+        this.txtCameraUrl.Size = new System.Drawing.Size(293, 34);
+        this.txtCameraUrl.TabIndex = 2;
+        // 
         // btnOpenCamera
         // 
         this.btnOpenCamera.Location = new System.Drawing.Point(282, 70);
@@ -351,6 +379,15 @@ namespace gatein
         this.btnOpenCamera.Text = "O&pen";
         this.btnOpenCamera.UseVisualStyleBackColor = true;
         this.btnOpenCamera.Click += new System.EventHandler(this.btnOpenCamera_Click);
+        // 
+        // label2
+        // 
+        this.label2.AutoSize = true;
+        this.label2.Location = new System.Drawing.Point(9, 13);
+        this.label2.Name = "label2";
+        this.label2.Size = new System.Drawing.Size(35, 13);
+        this.label2.TabIndex = 1;
+        this.label2.Text = "URL :";
         // 
         // txtCameraPassword
         // 
@@ -384,23 +421,6 @@ namespace gatein
         this.label3.Size = new System.Drawing.Size(55, 13);
         this.label3.TabIndex = 3;
         this.label3.Text = "Username";
-        // 
-        // txtCameraUrl
-        // 
-        this.txtCameraUrl.Location = new System.Drawing.Point(64, 10);
-        this.txtCameraUrl.Multiline = true;
-        this.txtCameraUrl.Name = "txtCameraUrl";
-        this.txtCameraUrl.Size = new System.Drawing.Size(293, 34);
-        this.txtCameraUrl.TabIndex = 2;
-        // 
-        // label2
-        // 
-        this.label2.AutoSize = true;
-        this.label2.Location = new System.Drawing.Point(9, 13);
-        this.label2.Name = "label2";
-        this.label2.Size = new System.Drawing.Size(35, 13);
-        this.label2.TabIndex = 1;
-        this.label2.Text = "URL :";
         // 
         // videoSource
         // 
@@ -641,23 +661,6 @@ namespace gatein
         this.btnGateSend.Text = "Send";
         this.btnGateSend.Click += new System.EventHandler(this.btnGateSend_Click);
         // 
-        // groupBox4
-        // 
-        this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                    | System.Windows.Forms.AnchorStyles.Right)));
-        this.groupBox4.Controls.Add(this.txtCameraUrl);
-        this.groupBox4.Controls.Add(this.btnOpenCamera);
-        this.groupBox4.Controls.Add(this.label2);
-        this.groupBox4.Controls.Add(this.txtCameraPassword);
-        this.groupBox4.Controls.Add(this.label4);
-        this.groupBox4.Controls.Add(this.txtCameraUsername);
-        this.groupBox4.Controls.Add(this.label3);
-        this.groupBox4.Location = new System.Drawing.Point(6, 348);
-        this.groupBox4.Name = "groupBox4";
-        this.groupBox4.Size = new System.Drawing.Size(369, 100);
-        this.groupBox4.TabIndex = 8;
-        this.groupBox4.TabStop = false;
-        // 
         // btnApply
         // 
         this.btnApply.Location = new System.Drawing.Point(12, 465);
@@ -670,6 +673,9 @@ namespace gatein
         // 
         // statusStrip1
         // 
+        this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusKoneksiPortal,
+            this.statusKoneksiInput});
         this.statusStrip1.Location = new System.Drawing.Point(0, 502);
         this.statusStrip1.Name = "statusStrip1";
         this.statusStrip1.Size = new System.Drawing.Size(874, 22);
@@ -685,6 +691,16 @@ namespace gatein
         this.btnClose.Text = "&Tutup";
         this.btnClose.UseVisualStyleBackColor = true;
         this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+        // 
+        // statusKoneksiPortal
+        // 
+        this.statusKoneksiPortal.Name = "statusKoneksiPortal";
+        this.statusKoneksiPortal.Size = new System.Drawing.Size(0, 17);
+        // 
+        // statusKoneksiInput
+        // 
+        this.statusKoneksiInput.Name = "statusKoneksiInput";
+        this.statusKoneksiInput.Size = new System.Drawing.Size(0, 17);
         // 
         // FormGateInSetting
         // 
@@ -715,14 +731,16 @@ namespace gatein
         this.groupBox1.ResumeLayout(false);
         this.groupBox1.PerformLayout();
         this.groupBox2.ResumeLayout(false);
+        this.groupBox4.ResumeLayout(false);
+        this.groupBox4.PerformLayout();
         this.groupBox3.ResumeLayout(false);
         this.groupBox3.PerformLayout();
         this.gbGateSetting.ResumeLayout(false);
         this.gbGateSetting.PerformLayout();
         this.gbGateDataMode.ResumeLayout(false);
         this.gbGateDataMode.PerformLayout();
-        this.groupBox4.ResumeLayout(false);
-        this.groupBox4.PerformLayout();
+        this.statusStrip1.ResumeLayout(false);
+        this.statusStrip1.PerformLayout();
         this.ResumeLayout(false);
         this.PerformLayout();
 
@@ -782,6 +800,8 @@ namespace gatein
       private System.Windows.Forms.Button btnApply;
       private System.Windows.Forms.StatusStrip statusStrip1;
       private System.Windows.Forms.Button btnClose;
+      private System.Windows.Forms.ToolStripStatusLabel statusKoneksiPortal;
+      private System.Windows.Forms.ToolStripStatusLabel statusKoneksiInput;
   }
 }
 

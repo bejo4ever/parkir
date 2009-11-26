@@ -50,6 +50,7 @@ namespace Nv.Parkir
             this.nmItemWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.mnItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mnItemAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnItemGate = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.mainMenu.SuspendLayout();
             this.SuspendLayout();
@@ -134,7 +135,8 @@ namespace Nv.Parkir
             this.mnItemUser,
             this.mnItemMember,
             this.mnItemGantiPassword,
-            this.mnItemSetting});
+            this.mnItemSetting,
+            this.mnItemGate});
             this.mnItemManage.Name = "mnItemManage";
             this.mnItemManage.Size = new System.Drawing.Size(57, 20);
             this.mnItemManage.Text = "Manage";
@@ -187,7 +189,7 @@ namespace Nv.Parkir
             // mnItemLaporan
             // 
             this.mnItemLaporan.Name = "mnItemLaporan";
-            this.mnItemLaporan.Size = new System.Drawing.Size(124, 22);
+            this.mnItemLaporan.Size = new System.Drawing.Size(152, 22);
             this.mnItemLaporan.Text = "Laporan";
             this.mnItemLaporan.Click += new System.EventHandler(this.mnItemLaporan_Click);
             // 
@@ -211,6 +213,13 @@ namespace Nv.Parkir
             this.mnItemAbout.Size = new System.Drawing.Size(114, 22);
             this.mnItemAbout.Text = "About";
             this.mnItemAbout.Click += new System.EventHandler(this.mnItemAbout_Click);
+            // 
+            // mnItemGate
+            // 
+            this.mnItemGate.Name = "mnItemGate";
+            this.mnItemGate.Size = new System.Drawing.Size(159, 22);
+            this.mnItemGate.Text = "Gate";
+            this.mnItemGate.Click += new System.EventHandler(this.mnItemGate_Click);
             // 
             // FormMain
             // 
@@ -255,6 +264,7 @@ namespace Nv.Parkir
         private System.Windows.Forms.ToolStripStatusLabel statusLabelStartLogin;
         private System.Windows.Forms.ToolStripMenuItem mnItemGantiPassword;
         private System.Windows.Forms.ToolStripMenuItem mnItemSetting;
+        private System.Windows.Forms.ToolStripMenuItem mnItemGate;
 
     }
 }
