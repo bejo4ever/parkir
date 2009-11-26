@@ -61,8 +61,8 @@ namespace gatein
 
             timer.Start();
 
-            RFID_START_DELIM = ConfigurationManager.AppSettings["rfid_start_char"];
-            RFID_END_DELIM = ConfigurationManager.AppSettings["rfid_end_char"];
+            RFID_START_DELIM = Properties.Settings.Default.SerialStartChar;
+            RFID_END_DELIM = Properties.Settings.Default.SerialEndChar;
 
             AppConfig.Instance.LoadAppSetting(
                 ConfigurationManager.AppSettings["db"]);
@@ -295,14 +295,21 @@ namespace gatein
                 inputSerial.StopBits = Properties.Settings.Default.InputStopBits;
                 inputSerial.Parity = Properties.Settings.Default.InputParity;
                 inputSerial.PortName = Properties.Settings.Default.InputPortName;
+                try
+                {
+                    inputSerial.Open();
+                    statusKoneksiInput.Text = "Input connected to Port : " + inputSerial.PortName;
+                    inputDataReceivedEventHandler = new SerialDataReceivedEventHandler(InputSerialDataReceived);
+                    inputSerial.DataReceived += inputDataReceivedEventHandler;
 
-                inputSerial.Open();
-                statusKoneksiInput.Text = "Input connected to Port : " + inputSerial.PortName;
-                inputDataReceivedEventHandler = new SerialDataReceivedEventHandler(InputSerialDataReceived);
-                inputSerial.DataReceived += inputDataReceivedEventHandler;
-
-                inputErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(InputSerialErrorReceived);
-                inputSerial.ErrorReceived += inputErrorReceivedEventHandler;
+                    inputErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(InputSerialErrorReceived);
+                    inputSerial.ErrorReceived += inputErrorReceivedEventHandler;
+                }
+                catch (Exception ex)
+                {
+                    statusKoneksiInput.ForeColor = Color.Red;
+                    statusKoneksiInput.Text = "Gagal Koneksi Ke Input";
+                }
 
                 gateSerial = new SerialPort();
                 gateSerial.BaudRate = Properties.Settings.Default.GateBaudRate;
@@ -310,14 +317,21 @@ namespace gatein
                 gateSerial.StopBits = Properties.Settings.Default.GateStopBits;
                 gateSerial.Parity = Properties.Settings.Default.GateParity;
                 gateSerial.PortName = Properties.Settings.Default.GatePortName;
-
-                gateSerial.Open();
-                statusKoneksiPortal.Text =
-                    "Gate connected to Port :" + gateSerial.PortName;
-                gateDataReceivedEventHandler = new SerialDataReceivedEventHandler(GateSerialDataReceived);
-                gateSerial.DataReceived += gateDataReceivedEventHandler;
-                gateErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(GateErrorReceived);
-                gateSerial.ErrorReceived += gateErrorReceivedEventHandler;
+                try
+                {
+                    gateSerial.Open();
+                    statusKoneksiPortal.Text =
+                        "Gate connected to Port :" + gateSerial.PortName;
+                    gateDataReceivedEventHandler = new SerialDataReceivedEventHandler(GateSerialDataReceived);
+                    gateSerial.DataReceived += gateDataReceivedEventHandler;
+                    gateErrorReceivedEventHandler = new SerialErrorReceivedEventHandler(GateErrorReceived);
+                    gateSerial.ErrorReceived += gateErrorReceivedEventHandler;
+                }
+                catch (Exception ex)
+                {
+                    statusKoneksiPortal.ForeColor = Color.Red;
+                    statusKoneksiPortal.Text = "Gagal Koneksi ke Portal";
+                }
             }
             catch (Exception ex)
             {
@@ -495,7 +509,7 @@ namespace gatein
             Cursor = Cursors.Default;
         }
 
-        private void openSettingToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mnItemOpenSetting_Click(object sender, EventArgs e)
         {
 
             StopIO();
@@ -506,7 +520,7 @@ namespace gatein
 
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mnItemExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }

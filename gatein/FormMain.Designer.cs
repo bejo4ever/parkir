@@ -86,7 +86,7 @@ namespace gatein
             this.mnItemSetting.Name = "mnItemSetting";
             this.mnItemSetting.Size = new System.Drawing.Size(148, 22);
             this.mnItemSetting.Text = "Open Setting";
-            this.mnItemSetting.Click += new System.EventHandler(this.openSettingToolStripMenuItem_Click);
+            this.mnItemSetting.Click += new System.EventHandler(this.mnItemOpenSetting_Click);
             // 
             // toolStripSeparator1
             // 
@@ -115,7 +115,7 @@ namespace gatein
             this.mnItemExit.Name = "mnItemExit";
             this.mnItemExit.Size = new System.Drawing.Size(148, 22);
             this.mnItemExit.Text = "E&xit";
-            this.mnItemExit.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.mnItemExit.Click += new System.EventHandler(this.mnItemExit_Click);
             // 
             // panel1
             // 
@@ -284,7 +284,6 @@ namespace gatein
             this.txtNopol.Name = "txtNopol";
             this.txtNopol.Size = new System.Drawing.Size(199, 44);
             this.txtNopol.TabIndex = 0;
-            this.txtNopol.Text = "L4435CE";
             // 
             // label1
             // 
@@ -405,8 +404,8 @@ namespace gatein
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormMain";
             this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.contextMenuStrip1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

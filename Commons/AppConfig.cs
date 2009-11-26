@@ -115,16 +115,19 @@ namespace Commons
         public string CompanyName
         {
             get { return companyName; }
+            set { companyName = value; }
         }
 
         public string CompanyAddress
         {
             get { return companyAddress; }
+            set { companyAddress = value; }
         }
 
         public string CompanyPhoneNumber
         {
             get { return phoneNumber; }
+            set { phoneNumber = value; }
         }
 
         public string ConnectionString
@@ -180,6 +183,19 @@ namespace Commons
         {
             this.connectionString = connectionString;
             LoadAppSetting();
+        }
+
+        public void SaveCompanySettting()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                string sql = "update app set company_name = '" + CompanyName + "', " +
+                    "company_address ='" + CompanyAddress + "', " +
+                    "phone_number ='" + CompanyPhoneNumber + "' where app_id = 1";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public void LoadGateSetting(int id)

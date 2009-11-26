@@ -82,16 +82,19 @@ namespace Nv.Parkir
 
         private void RefreshGridData()
         {
-            dataset.Clear();
-            MySql.Data.MySqlClient.MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection(
-               AppConfig.Instance.ConnectionString);
-            MySql.Data.MySqlClient.MySqlDataAdapter adp = new MySql.Data.MySqlClient.MySqlDataAdapter(
-                "select p.id as id, p.name as name, p.initial_price as initial_tarif, p.extended_price as " +
-                " extended_tarif, p.extended_after as extended_after, g.group_name from tarifs p, tarifs_groups g where " + 
-                " p.group_id = g.id", conn);
-            conn.Open();
-            adp.Fill(dataset, "tarifs");
-            dataGrid.DataSource = dataset.Tables["tarifs"].DefaultView;
+            
+            using (MySql.Data.MySqlClient.MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection(
+               AppConfig.Instance.ConnectionString))
+            {
+                dataset.Clear();
+                MySql.Data.MySqlClient.MySqlDataAdapter adp = new MySql.Data.MySqlClient.MySqlDataAdapter(
+                    "select p.id as id, p.name as name, p.initial_price as tarif_awal, p.extended_price as " +
+                    " tarif_tambahan, p.extended_after as bertambah_setelah, g.group_name from tarifs p, tarifs_groups g where " +
+                    " p.group_id = g.id", conn);
+                conn.Open();
+                adp.Fill(dataset, "tarifs");
+                dataGrid.DataSource = dataset.Tables["tarifs"].DefaultView;
+            }
         }
 
         private void clear_data_detail()
